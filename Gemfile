@@ -36,6 +36,8 @@ gem "thruster", require: false
 # gem "rack-cors"
 gem 'bcrypt', '~> 3.1.18'
 gem "jwt"      # for JSON Web Tokens
+# Gemfile
+gem "rack-cors"
 
 
 group :development, :test do

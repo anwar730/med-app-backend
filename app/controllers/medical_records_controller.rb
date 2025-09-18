@@ -10,7 +10,10 @@ class MedicalRecordsController < ApplicationController
                                       .where(appointments: { doctor_id: @current_user.id })
     elsif @current_user.role == "patient"
       # Patients see their own records
-      @medical_records = @current_user.medical_records
+      @medical_records = @current_user.medical_records.joins(:appointment)
+      elsif @current_user.role == "admin"
+      # Patients see their own records
+      @medical_records = MedicalRecord.all
     else
       @medical_records = MedicalRecord.none
     end

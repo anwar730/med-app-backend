@@ -9,6 +9,14 @@ class BillingsController < ApplicationController
 
     render json: @appointment.billing ? [@appointment.billing] : []
   end
+  # GET /admin/billings
+def all_billings
+  return render json: { error: "Only admin can view all billings" }, status: :forbidden unless @current_user.role == "admin"
+
+  billings = Billing.includes(:appointment).all
+  render json: billings.as_json(include: { appointment: { include: :patient } })
+end
+
 
   # GET /billings/:id
   def show
@@ -31,7 +39,7 @@ class BillingsController < ApplicationController
 
   # PATCH/PUT /billings/:id
   def update
-    return render json: { error: "Only doctors can update billings" }, status: :forbidden unless @current_user.role == "doctor"
+    return render json: { error: "Only doctors can update billings" }, status: :forbidden unless @current_user.role == "admin"
 
     if @billing.update(billing_params)
       render json: @billing
@@ -72,6 +80,6 @@ class BillingsController < ApplicationController
   end
 
   def billing_params
-    params.require(:billing).permit(:amount, :status, :notes)
+    params.require(:billing).permit(:amount, :status, :appointment_id)
   end
 end

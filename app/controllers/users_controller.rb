@@ -1,63 +1,93 @@
+# app/controllers/users_controller.rb
 class UsersController < ApplicationController
-  before_action :authorize_request, only: [:me]
-  before_action :set_user, only: [ :show, :update, :destroy]
-  skip_before_action :authorize_request, only: :create
+  include Rails.application.routes.url_helpers
 
+  before_action :authorize_request, except: [:create]
+  before_action :set_user, only: [:show, :update, :destroy]
+  before_action :authorize_admin, only: [ :destroy]
+  before_action :authorize_self_or_admin, only: [:show, :update]
 
-  # GET /users
+  # Register user (patient or pending doctor)
+  def create
+  user = User.new(user_params)
+  user.role ||= "patient"
+
+  if user_params[:cv].present?
+    user.cv.attach(user_params[:cv])  # ✅ attach CV properly
+  end
+  if user.save
+    token = JsonWebToken.encode(user_id: user.id)
+    render json: { 
+      token: token, 
+      user: user.as_json.merge({
+        cv_url: user.cv.attached? ? url_for(user.cv) : nil
+      }) 
+    }, status: :created
+  else
+    render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
+  end
+end
+
+  # List all users (admin only)
   def index
-    @users = User.all
-
-    render json: @users
+    render json: User.all
   end
 
-  def me
-    if @current_user
-      render json: @current_user
-    else
-      render json: { error: 'Not authorized' }, status: :unauthorized
-    end
-  end
-
-  # GET /users/1
+  # Show profile
   def show
     render json: @user
   end
 
-  # POST /users
-  def create
-    user = User.new(user_params)
-    if user.save
-      token = JWT.encode({ user_id: user.id }, Rails.application.secret_key_base)
-    render json: { user: user, token: token }, status: :created
-    else
-      render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
-    end
-  end
-
-  # PATCH/PUT /users/1
+  # Update profile (self or admin)
   def update
     if @user.update(user_params)
       render json: @user
     else
-      render json: @user.errors, status: :unprocessable_entity
+      render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
-  # DELETE /users/1
+  # Delete user (admin only)
   def destroy
-    @user.destroy!
+    @user.destroy
+    render json: { message: "User deleted successfully" }
+  end
+
+  # Current logged in user
+  def me
+    render json: @current_user
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_user
-      @user = User.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-   # Only allow a list of trusted parameters through.
-def user_params
-  params.permit(:name, :email, :password, :password_confirmation, :role)
-end
+  def set_user
+    @user = User.find(params[:id])
+  end
+
+  def user_params
+    params.permit(
+    :name,
+    :email,
+    :password,
+    :password_confirmation,
+    :role,
+    :phone,
+    :gender,
+    :dob,
+    :specialization,
+    :license_number,
+    :workplace,
+    :cv
+  )
+  end
+
+  def authorize_admin
+    render json: { error: "Admins only" }, status: :forbidden unless @current_user.role == "admin"
+  end
+
+  def authorize_self_or_admin
+    unless @current_user == @user || @current_user.role == "admin"
+      render json: { error: "Access denied" }, status: :forbidden
+    end
+  end
 end
