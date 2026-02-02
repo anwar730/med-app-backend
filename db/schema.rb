@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_17_190920) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_02_113721) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -60,6 +60,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_17_190920) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "tx_ref"
+    t.string "session_id"
+    t.string "payment_intent_id"
+    t.datetime "paid_at"
+    t.index ["payment_intent_id"], name: "index_billings_on_payment_intent_id"
+    t.index ["session_id"], name: "index_billings_on_session_id"
   end
 
   create_table "medical_records", force: :cascade do |t|

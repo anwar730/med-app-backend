@@ -91,6 +91,9 @@ GEM
       irb (~> 1.10)
       reline (>= 0.3.8)
     dotenv (3.1.8)
+    dotenv-rails (3.1.8)
+      dotenv (= 3.1.8)
+      railties (>= 6.1)
     drb (2.2.3)
     ed25519 (1.4.0)
     erb (5.0.2)
@@ -274,6 +277,7 @@ GEM
       net-ssh (>= 2.8.0)
       ostruct
     stringio (3.1.7)
+    stripe (18.3.0)
     thor (1.4.0)
     thruster (0.1.15-x86_64-linux)
     timeout (0.4.3)
@@ -299,6 +303,7 @@ DEPENDENCIES
   bootsnap
   brakeman
   debug
+  dotenv-rails (~> 3.1)
   jwt
   kamal
   pg (~> 1.1)
@@ -309,6 +314,7 @@ DEPENDENCIES
   solid_cable
   solid_cache
   solid_queue
+  stripe (~> 18.3)
   thruster
   tzinfo-data
 

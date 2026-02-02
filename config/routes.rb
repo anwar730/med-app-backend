@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   get "/me", to: "users#me"
 
   get "/admin/billings", to: "billings#all_billings"
+  get "/admin/billings/stats", to: "billings#stats"  # Add this line
 
 
   resources :appointments do
@@ -63,5 +64,22 @@ end
     # Medical Records
   get "/medical_records", to: "admins#medical_records"
   delete "/medical_records/:id", to: "admins#destroy_medical_record"
+
+
+  # ---------------------------
+  # Billings & Stripe Payments
+  # ---------------------------
+  resources :billings, only: [:show, :update, :destroy] do
+    member do
+      post :create_checkout_session  # NEW: Create Stripe payment session
+      get :verify_payment            # NEW: Verify payment status
+    end
+  end
+
+  # ---------------------------
+  # Stripe Webhook (for production)
+  # ---------------------------
+  post "/webhooks/stripe", to: "webhooks#stripe"  # NEW: Stripe webhook endpoint
+
 
 end
