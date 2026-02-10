@@ -81,5 +81,10 @@ end
   # ---------------------------
   post "/webhooks/stripe", to: "webhooks#stripe"  # NEW: Stripe webhook endpoint
 
-
+  # For any unmatched routes# M-Pesa Routes
+post 'billings/:id/mpesa_payment', to: 'mpesa_payments#create'
+post 'mpesa/callback', to: 'mpesa_payments#callback'
+  
+  # Optional: Query payment status
+get 'billings/:id/mpesa_status', to: 'mpesa_payments#status'
 end
