@@ -24,7 +24,7 @@ class AdminController < ApplicationController
   # ✅ List all pending doctor applications
   def pending_doctors
   pending = User.where(role: "pending_doctor").map do |doc|
-    doc.as_json(only: [:id, :name, :email, :specialization, :license_number, :workplace])
+    doc.as_json(only: [:id, :name, :email, :specialization, :license_number,:consultation_fee, :workplace])
        .merge({
          cv_url: doc.cv.attached? ? url_for(doc.cv) : nil
        })

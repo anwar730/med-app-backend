@@ -76,6 +76,7 @@ end
     :dob,
     :specialization,
     :license_number,
+    :consultation_fee,
     :workplace,
     :cv
   )
