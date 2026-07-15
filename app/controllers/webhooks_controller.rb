@@ -1,7 +1,7 @@
 # app/controllers/webhooks_controller.rb
 
 class WebhooksController < ApplicationController
-  skip_before_action :verify_authenticity_token
+  # skip_before_action :verify_authenticity_token
   skip_before_action :authorize_request
 
   def stripe
