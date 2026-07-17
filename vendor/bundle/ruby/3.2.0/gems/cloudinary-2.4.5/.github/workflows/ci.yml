@@ -1,0 +1,44 @@
+name: Ruby Test 💎
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: 💎 Test with Ruby ${{ matrix.ruby-version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby-version:
+          - '3.1.7'
+          - '3.2.9'
+          - '3.3.10'
+          - '3.4.8'
+          - '4.0.0'
+
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: 🔄 Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: 🛠️ Setup Ruby ${{ matrix.ruby-version }}
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby-version }}
+        bundler-cache: true
+
+    - name: ☁️ Set up test cloud
+      run: |
+        export CLOUDINARY_URL=$(bash tools/get_test_cloud.sh)
+        echo "CLOUDINARY_URL=$CLOUDINARY_URL" >> $GITHUB_ENV
+        echo "cloud_name: $(echo $CLOUDINARY_URL | cut -d'@' -f2)"
+
+    - name: 🧪 Run tests
+      run: bundle exec rspec --format documentation --color
+      env:
+        CLOUDINARY_URL: ${{ env.CLOUDINARY_URL }}
