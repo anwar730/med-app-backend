@@ -40,7 +40,7 @@ gem "jwt"      # for JSON Web Tokens
 gem "rack-cors"
 
 gem "cloudinary"
-
+gem "activestorage-cloudinary-service"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
